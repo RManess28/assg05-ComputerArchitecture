@@ -743,18 +743,30 @@ void ld_img(char* fname)
  * @returns bool True if we are in user mode (bit 15 is 1) and False if we are
  *   in supervisor mode (bit 15 is 0).
  */
+bool is_user_mode()
+{
+  return (reg[PSR] >> 15) & 0x1;
+}
 
 /** @brief set user mode
  *
  * Set the machine into user mode.  This function sets bit 15 to be 1 to indicate
  * that we are now running in the less privileged user mode.
  */
+void user_mode()
+{
+  reg[PSR] |= 0x8000;
+}
 
 /** @brief set supervisor mode
  *
  * Set the machine into supervisor mode.  This function sets bit 15 to be 0
  * to indicate that we are now running in the more privileged supervisor mode.
  */
+void supervisor_mode()
+{
+  reg[PSR] &= 0x7FFF;
+}
 
 /** @brief get priority
  *
