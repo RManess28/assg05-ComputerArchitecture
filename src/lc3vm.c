@@ -516,6 +516,30 @@ void trap(uint16_t i)
   reg[RPC] = mem_read(TRP(i));
 }
 
+/** @brief exception
+ *
+ * The exception service vector is in low 8 bits 7-0 of the parameter.
+ * The exception service vector indexes into the exception vector table,
+ * that exists in supervisor memory from 0x0100 - 0x0102.  These contain
+ * the address of the exception service routine in supervisor memory that
+ * should be invoked.
+ *
+ * @param i The exception vector index to be invoked.
+ */
+void except(uint16_t i)
+{
+  uint16_t temp = reg[PSR];
+  if (is_user_mode())
+  {
+    reg[USP] = reg[R6];
+    reg[R6] = reg[SSP];
+    supervisor_mode();
+  }
+  push(reg[RPC]);
+  push(temp);
+  reg[RPC] = mem_read(0x0100 + TRP(i));
+}
+
 /**
  * LC-3 instruction microcode store / lookup table.  Need to define array
  * of function pointers with all (microcode) functions inserted in
